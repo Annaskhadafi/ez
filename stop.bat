@@ -1,25 +1,15 @@
 @echo off
-title EZ Chitra - Stop System
+title EZ Chitra - Menghentikan Layanan
+chcp 65001 >nul
 echo ========================================================
 echo               MENGHENTIKAN EZ CHITRA
 echo ========================================================
 echo.
 
-echo Menghentikan Backend di Port 8000...
-for /f "tokens=5" %%a in ('netstat -aon ^| findstr ":8000 " ^| findstr "LISTENING"') do (
-    taskkill /f /pid %%a >nul 2>&1
-    echo - Backend (PID: %%a) dihentikan.
-)
-
-echo Menghentikan Frontend di Port 5173...
-for /f "tokens=5" %%a in ('netstat -aon ^| findstr ":5173 " ^| findstr "LISTENING"') do (
-    taskkill /f /pid %%a >nul 2>&1
-    echo - Frontend (PID: %%a) dihentikan.
-)
+powershell -Command "Get-NetTCPConnection -LocalPort 8000, 5173 -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }"
 
 echo.
-echo ========================================================
-echo  Layanan EZ Chitra telah dihentikan.
+echo Layanan Backend (Port 8000) dan Frontend (Port 5173) berhasil dimatikan.
 echo ========================================================
 echo.
 pause
